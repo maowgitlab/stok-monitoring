@@ -1,0 +1,3 @@
+1. buat list minimal stok menipis masing masing barang
+2. buat fitur prediksi untuk re-stok bahan baku
+3. lanjut analisis dan dashboard berdasarkan arsipan
