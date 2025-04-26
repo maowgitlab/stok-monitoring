@@ -17,6 +17,7 @@ Route::get('/items', [ItemController::class, 'index'])->name('items.index');
 Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
 Route::delete('/items/destroy-all', [ItemController::class, 'destroyAll'])->name('items.destroyAll');
 Route::get('/laporan/wa', [ItemController::class, 'whatsappReport'])->name('items.whatsapp-report');
+Route::post('/items/whatsapp-report/send-telegram', [ItemController::class, 'sendToTelegram'])->name('items.send-telegram');
 Route::get('/archived', [ItemController::class, 'archivedIndex'])->name('items.archived');
 Route::post('/items/archive', [ItemController::class, 'archive'])->name('items.archive');
 Route::get('/items/{item}/archived', [ItemController::class, 'showArchived'])->name('items.showArchived');

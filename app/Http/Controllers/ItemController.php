@@ -9,6 +9,7 @@ use App\Services\StockService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class ItemController extends Controller
 {
@@ -145,6 +146,43 @@ class ItemController extends Controller
             $report = $this->stockService->generateWhatsappReport($tanggal);
         }
     
-        return view('items.whatsapp-report', compact('report'));
+        return view('items.whatsapp-report', compact('report' ,'tanggal'));
+    }
+
+    public function sendToTelegram(Request $request)
+    {
+        $tanggal = $request->input('tanggal');
+        $report = $this->stockService->generateWhatsappReport($tanggal);
+
+        if (empty($report)) {
+            return redirect()->route('items.whatsapp-report')
+                ->with('error', 'Tidak ada laporan untuk tanggal yang dipilih.');
+        }
+
+        $botToken = env('TELEGRAM_BOT_TOKEN', '7933107197:AAHqfBpD2xGdRjmiX9rucPmC9ud78O95rHY');
+        $chatId = env('TELEGRAM_CHAT_ID', '-1002544298109');
+        $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
+
+        try {
+            $response = Http::post($url, [
+                'chat_id' => $chatId,
+                'text' => $report,
+                'parse_mode' => 'HTML', // Optional: Use HTML for better formatting if needed
+            ]);
+
+            if ($response->successful()) {
+                Log::info("Telegram message sent successfully for date: {$tanggal}");
+                return redirect()->route('items.whatsapp-report', ['tanggal' => $tanggal])
+                    ->with('success', 'Laporan berhasil dikirim ke Telegram.');
+            } else {
+                Log::error("Failed to send Telegram message: " . $response->body());
+                return redirect()->route('items.whatsapp-report', ['tanggal' => $tanggal])
+                    ->with('error', 'Gagal mengirim laporan ke Telegram.');
+            }
+        } catch (\Exception $e) {
+            Log::error("Exception while sending Telegram message: " . $e->getMessage());
+            return redirect()->route('items.whatsapp-report', ['tanggal' => $tanggal])
+                ->with('error', 'Terjadi kesalahan saat mengirim laporan ke Telegram.');
+        }
     }
 }

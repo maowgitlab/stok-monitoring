@@ -13,12 +13,21 @@
                         <label for="tanggal" class="form-label">Pilih Tanggal</label>
                         <input type="date" name="tanggal" id="tanggal" class="form-control shadow-sm" value="{{ request('tanggal') }}">
                     </div>
-                    <div class="col-md-4 d-flex">
+                    <div class="col-md-4">
                         <button type="submit" class="btn btn-import mx-2">Tampilkan</button>
                         <button type="button" class="btn btn-action" onclick="copyText()">Copy ke Clipboard</button>
                     </div>
                 </div>
             </form>
+            <div class="row">
+                <div class="col mb-3">
+                    <form method="POST" action="{{ route('items.send-telegram') }}">
+                        @csrf
+                        <input type="hidden" name="tanggal" value="{{ $tanggal }}">
+                        <button type="submit" class="btn btn-telegram">Kirim ke Telegram</button>
+                    </form>
+                </div>
+            </div>
             <textarea class="form-control shadow-sm" rows="25" readonly style="font-family: 'Poppins', sans-serif; resize: none;" placeholder="Pilih tanggal terlebih dahulu untuk melihat laporan.">{{ $report ?? '' }}</textarea>
         </div>
     </div>
@@ -30,6 +39,8 @@
     .btn-import:hover { background: #16a085; transform: translateY(-2px); }
     .btn-action { background: #f39c12; border: none; border-radius: 25px; transition: all 0.3s ease; }
     .btn-action:hover { background: #e67e22; transform: translateY(-2px); }
+    .btn-telegram { background: #0088cc; border: none; border-radius: 25px; transition: all 0.3s ease; }
+    .btn-telegram:hover { background: #006699; transform: translateY(-2px); }
 </style>
 @endsection
 
