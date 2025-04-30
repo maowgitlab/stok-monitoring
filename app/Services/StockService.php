@@ -287,9 +287,9 @@ class StockService
         ];
 
         $coldStorageMap = [
-            'KULIT AYAM MARINASI' => 1450,
-            'DADA FILLET MARINASI' => 3300,
-            'DADA FILLET BURGER' => 4000,
+            'KULIT AYAM MARINASI' => 750,
+            'DADA FILLET MARINASI' => 3050,
+            'DADA FILLET BURGER' => 3000,
             'AYAM ORIGINAL' => 0,
         ];
 

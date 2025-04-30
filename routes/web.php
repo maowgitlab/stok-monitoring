@@ -8,6 +8,7 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\LowStockController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StockAnalysisController;
+use App\Http\Controllers\StockComparisonController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/dashboard/report', [DashboardController::class, 'generateReport'])->name('dashboard.report');
@@ -35,3 +36,5 @@ Route::get('/low-stock/whatsapp-report', [LowStockController::class, 'whatsappRe
 Route::get('/stocks/paste', [StockController::class, 'pasteForm'])->name('stocks.paste');
 Route::post('/stocks/paste', [StockController::class, 'processPaste'])->name('stocks.paste.process');
 Route::post('/stocks/paste-out', [StockController::class, 'processPasteKeluar'])->name('stocks.paste.out');
+// Route komparasi stok
+Route::match(['get', 'post'], '/stocks/compare', [StockComparisonController::class, 'index'])->name('stocks.compare');

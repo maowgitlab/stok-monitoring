@@ -217,6 +217,11 @@
                     <i class="fas fa-paste"></i> Laporan WA
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('stocks.compare') ? 'active' : '' }}" href="{{ route('stocks.compare') }}">
+                    <i class="fas fa-paste"></i> Compare Stok
+                </a>
+            </li>
         </ul>
     </div>
 
