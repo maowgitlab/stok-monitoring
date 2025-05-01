@@ -288,8 +288,8 @@ class StockService
 
         $coldStorageMap = [
             'KULIT AYAM MARINASI' => 750,
-            'DADA FILLET MARINASI' => 3050,
-            'DADA FILLET BURGER' => 3000,
+            'DADA FILLET MARINASI' => 2800,
+            'DADA FILLET BURGER' => 2000,
             'AYAM ORIGINAL' => 0,
         ];
 
@@ -467,7 +467,7 @@ class StockService
             'DUS KULIT' => ['minimal' => 100, 'unit' => 'pcs', 'conversion' => 1, 'threshold' => 5000],
             'SYRUP APPLE' => ['minimal' => 1, 'unit' => 'botol', 'conversion' => 750, 'threshold' => 50],
             'SYRUP PASSION FRUIT' => ['minimal' => 1, 'unit' => 'botol', 'conversion' => 750, 'threshold' => 50],
-            'SODA LEMON' => ['minimal' => 6, 'unit' => 'botol', 'conversion' => 1625, 'threshold' => 60],
+            'SODA LEMON' => ['minimal' => 1, 'unit' => 'botol', 'conversion' => 1625, 'threshold' => 60],
             'BUMBU TABUR SAPI PANGGANG' => ['minimal' => 1, 'unit' => 'pack', 'conversion' => 250, 'threshold' => 50],
             'BUMBU TABUR CABE PEDAS' => ['minimal' => 1, 'unit' => 'pack', 'conversion' => 250, 'threshold' => 50],
             'CHOCO MALT' => ['minimal' => 1000, 'unit' => 'gr', 'conversion' => 1, 'threshold' => 100000],
