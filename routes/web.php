@@ -6,6 +6,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\LowStockController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StockAnalysisController;
 use App\Http\Controllers\StockComparisonController;
@@ -42,3 +43,6 @@ Route::match(['get', 'post'], '/stocks/compare', [StockComparisonController::cla
 Route::post('/cold-storages', [ItemController::class, 'storeColdStorage'])->name('cold-storages.store');
 Route::put('/cold-storages/{coldStorage}', [ItemController::class, 'updateColdStorage'])->name('cold-storages.update');
 Route::delete('/cold-storages/{coldStorage}', [ItemController::class, 'destroyColdStorage'])->name('cold-storages.destroy');
+// Route untuk Pengaturan
+Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+Route::post('/settings/clear-cache', [SettingsController::class, 'clearCache'])->name('settings.clear-cache');

@@ -43,16 +43,17 @@
         }
         .sidebar {
             background: #2c3e50;
-            height: 100vh;
-            padding: 20px;
+            height: 100%; /* Ikut parent */
+            max-height: 100vh; /* Batasi ke viewport */
+            padding: 30px 20px; /* Tambah padding atas */
             box-shadow: 2px 0 10px rgba(0,0,0,0.3);
             position: fixed;
-            top: auto;
-            left: -250px; /* Hidden by default di mobile */
+            top: 0; /* Default */
+            left: -250px; /* Hidden di mobile */
             width: 250px;
             transition: all 0.3s ease;
             z-index: 1000;
-            overflow: auto;
+            overflow-y: auto; /* Scroll vertikal */
         }
         .sidebar.show {
             left: 0; /* Muncul pas toggle */
@@ -109,10 +110,27 @@
             display: block;
         }
 
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #34495e;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+
         /* Responsive Adjustments */
         @media (min-width: 768px) {
             .sidebar {
                 left: 0; /* Tampil di desktop */
+                top: 56px; /* Mulai bawah navbar */
+                max-height: calc(100vh - 56px); /* Kurangi navbar */
             }
             .content-wrapper {
                 margin-left: 250px; /* Geser konten di desktop */
@@ -136,7 +154,8 @@
             }
             .sidebar {
                 top: 56px; /* Mulai dari bawah navbar */
-                height: calc(100vh - 56px);
+                height: calc(100vh - 56px); /* Sesuaikan tinggi */
+                max-height: calc(100vh - 56px); /* Batasi di mobile */
             }
         }
         @keyframes fadeIn {
@@ -220,6 +239,14 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('stocks.compare') ? 'active' : '' }}" href="{{ route('stocks.compare') }}">
                     <i class="fas fa-paste"></i> Compare Stok
+                </a>
+            </li>
+        </ul>
+        <h6 class="sidebar-heading">Pengaturan</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('settings.index') ? 'active' : '' }}" href="{{ route('settings.index') }}">
+                    <i class="fas fa-cog"></i> Pengaturan
                 </a>
             </li>
         </ul>
