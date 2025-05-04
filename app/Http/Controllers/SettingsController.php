@@ -13,8 +13,6 @@ class SettingsController extends Controller
     {
         // Hitung ukuran cache
         $cacheSizes = [
-            'config' => $this->getCacheSize('config'),
-            'route' => $this->getCacheSize('route'),
             'view' => $this->getCacheSize('view'),
             'cache' => $this->getCacheSize('cache'),
         ];
@@ -53,17 +51,7 @@ class SettingsController extends Controller
     {
         $size = 0;
 
-        if ($type === 'config') {
-            $file = base_path('bootstrap/cache/config.php');
-            if (File::exists($file)) {
-                $size = File::size($file);
-            }
-        } elseif ($type === 'route') {
-            $files = File::glob(base_path('bootstrap/cache/routes-*.php'));
-            foreach ($files as $file) {
-                $size += File::size($file);
-            }
-        } elseif ($type === 'view') {
+        if ($type === 'view') {
             $path = storage_path('framework/views');
             if (File::exists($path)) {
                 $size = $this->getFolderSize($path);

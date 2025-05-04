@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <h1 class="mb-5 fw-bold text-dark" style="font-family: 'Poppins', sans-serif; color: #2c3e50; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">Pengaturan</h1>
+    <h1 class="mb-5 fw-bold" style="font-family: 'Poppins', sans-serif; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">Pengaturan</h1>
 
     <div class="card shadow-lg" style="border-radius: 15px;">
         <div class="card-header bg-gradient-custom text-white">
@@ -18,8 +18,6 @@
             @php
                 $maxSize = max($cacheSizes) > 0 ? max($cacheSizes) : 1; // Hindari bagi nol
                 $labels = [
-                    'config' => 'Cache Konfigurasi',
-                    'route' => 'Cache Rute',
                     'view' => 'Cache View',
                     'cache' => 'Cache Aplikasi',
                 ];
@@ -27,7 +25,7 @@
 
             @foreach($cacheSizes as $type => $size)
                 <div class="mb-3">
-                    <label class="fw-bold text-dark" style="font-family: 'Poppins', sans-serif;">
+                    <label class="fw-bold" style="font-family: 'Poppins', sans-serif;">
                         {{ $labels[$type] }}: {{ $cacheSizesFormatted[$type] }}
                     </label>
                     <div class="progress" style="height: 20px; border-radius: 10px;">
@@ -75,8 +73,17 @@
         background: #16a085;
         transform: translateY(-2px);
     }
+    .progress {
+        background: #e2e8f0;
+    }
     .progress-bar {
         transition: width 0.6s ease;
+    }
+    h1, h5, label.fw-bold, strong {
+        color: var(--text-light);
+    }
+    .text-muted {
+        color: #6c757d !important;
     }
 </style>
 @endsection
