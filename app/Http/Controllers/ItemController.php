@@ -24,7 +24,7 @@ class ItemController extends Controller
     {
         $query = Item::select('items.*')
             ->whereHas('stockHistories', function ($q) {
-                $q->where('is_archived', false); // Cuma item dengan histori aktif
+                $q->where('is_archived', false);
             });
 
         if (request()->filled('search')) {
@@ -40,7 +40,7 @@ class ItemController extends Controller
         $items->getCollection()->transform(function ($item) {
             $stockData = $this->stockService->getAggregatedStockHistory($item->id, 30, null, false);
             $item->tanggal_stok = $stockData->isNotEmpty() ? $stockData->last()->tanggal : null;
-            return $item; // Nggak usah set stok
+            return $item;
         });
 
         return view('items.index', compact('items'));
@@ -51,7 +51,7 @@ class ItemController extends Controller
         $allDates = StockHistory::where('is_archived', true)
             ->pluck('tanggal')
             ->map(function ($tanggal) {
-                return \Carbon\Carbon::parse($tanggal)->toDateString();
+                return Carbon::parse($tanggal)->toDateString();
             })
             ->unique()
             ->sortDesc()
@@ -81,7 +81,7 @@ class ItemController extends Controller
 
         if ($selectedDate) {
             $stockData = $stockData->filter(function ($history) use ($selectedDate) {
-                return \Carbon\Carbon::parse($history->tanggal)->toDateString() === $selectedDate;
+                return Carbon::parse($history->tanggal)->toDateString() === $selectedDate;
             });
         }
 
@@ -92,7 +92,7 @@ class ItemController extends Controller
 
     public function show(Item $item)
     {
-        $stockData = $this->stockService->getAggregatedStockHistory($item->id, 30, null, false); // Data aktif
+        $stockData = $this->stockService->getAggregatedStockHistory($item->id, 30, null, false);
         $latestStock = $stockData->isNotEmpty() ? $stockData->last() : null;
 
         return view('items.show', compact('item', 'stockData', 'latestStock'));
@@ -106,11 +106,10 @@ class ItemController extends Controller
             return redirect()->route('items.index')->with('error', 'Tidak ada data aktif untuk diarsipkan.');
         }
 
-        
         DB::transaction(function () use ($itemIds) {
             $updated = StockHistory::whereIn('item_id', $itemIds)
-            ->where('is_archived', false)
-            ->update(['is_archived' => true]);
+                ->where('is_archived', false)
+                ->update(['is_archived' => true]);
             Log::info("Mengarsipkan $updated row untuk item: " . json_encode($itemIds->all()));
         });
 
@@ -119,34 +118,40 @@ class ItemController extends Controller
 
     public function destroyAll(Request $request)
     {
-        $tanggal = now()->toDateString();
+        $itemIds = StockHistory::where('is_archived', false)->pluck('item_id')->unique();
 
-        $itemIds = StockHistory::whereDate('tanggal', $tanggal)->pluck('item_id')->unique();
+        if ($itemIds->isEmpty()) {
+            return redirect()->route('items.index')->with('error', 'Tidak ada item aktif untuk dihapus.');
+        }
 
-        Item::whereIn('id', $itemIds)->each(function ($item) use ($tanggal) {
-            $item->stockHistories()->whereDate('tanggal', $tanggal)->delete();
+        DB::transaction(function () use ($itemIds) {
+            // Hapus histori aktif
+            $deletedHistories = StockHistory::whereIn('item_id', $itemIds)
+                ->where('is_archived', false)
+                ->delete();
 
-            if ($item->stockHistories()->count() === 0) {
-                $item->delete();
-            }
+            // Hapus item yang tidak punya histori tersisa (aktif atau arsip)
+            $itemsDeleted = Item::whereIn('id', $itemIds)
+                ->whereDoesntHave('stockHistories')
+                ->delete();
+
+            Log::info("Menghapus $deletedHistories histori aktif dan $itemsDeleted item untuk item_ids: " . json_encode($itemIds->all()));
         });
 
         return redirect()->route('items.index')
-            ->with('success', 'Data item dan stok hari ini berhasil dihapus.');
+            ->with('success', 'Semua item aktif dan histori stoknya berhasil dihapus.');
     }
-
 
     public function whatsappReport(Request $request)
     {
         $report = '';
         $tanggal = $request->input('tanggal');
-    
-        // Hanya generate report kalau ada tanggal yang dipilih
+
         if ($tanggal) {
             $report = $this->stockService->generateWhatsappReport($tanggal);
         }
-    
-        return view('items.whatsapp-report', compact('report' ,'tanggal'));
+
+        return view('items.whatsapp-report', compact('report', 'tanggal'));
     }
 
     public function sendToTelegram(Request $request)
@@ -167,7 +172,7 @@ class ItemController extends Controller
             $response = Http::post($url, [
                 'chat_id' => $chatId,
                 'text' => $report,
-                'parse_mode' => 'HTML', // Optional: Use HTML for better formatting if needed
+                'parse_mode' => 'HTML',
             ]);
 
             if ($response->successful()) {

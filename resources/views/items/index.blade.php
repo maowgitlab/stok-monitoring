@@ -16,8 +16,15 @@
             </a>
             <form action="{{ route('items.archive') }}" method="POST" class="d-inline">
                 @csrf
-                <button type="submit" class="btn btn-action" onclick="return confirm('Yakin ingin mengarsipkan semua data aktif?')">
+                <button type="submit" class="btn btn-action me-2" onclick="return confirm('Yakin ingin mengarsipkan semua data aktif?')">
                     <i class="fas fa-archive me-1"></i> Arsipkan
+                </button>
+            </form>
+            <form action="{{ route('items.destroyAll') }}" method="POST" class="d-inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus semua item aktif dan histori stoknya? Data yang dihapus tidak dapat dikembalikan.')">
+                    <i class="fas fa-trash me-1"></i> Hapus Semua
                 </button>
             </form>
         </div>
@@ -83,7 +90,7 @@
 
     <!-- Pagination -->
     <div class="mt-4 d-flex justify-content-center">
-        {{ $items->links('pagination::bootstrap-5') }}
+        {{ $items->links() }}
     </div>
 </div>
 @endsection
@@ -108,6 +115,8 @@
     .btn-archive:hover { background: #2c3e50; transform: translateY(-2px); }
     .btn-action { background: #f39c12; }
     .btn-action:hover { background: #e67e22; transform: translateY(-2px); }
+    .btn-delete { background: #e74c3c; }
+    .btn-delete:hover { background: #c0392b; transform: translateY(-2px); }
 
     /* Search Bar */
     .search-input {
@@ -177,6 +186,45 @@
         transform: translateY(-2px);
     }
 
+    /* Pagination */
+    .pagination {
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .pagination li {
+        margin: 0 0.2rem;
+    }
+    .pagination a, .pagination span {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        text-decoration: none;
+        color: #3498db;
+        border: 1px solid #3498db;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+    .pagination .active span {
+        background-color: #3498db;
+        color: white;
+        border-color: #3498db;
+    }
+    .pagination .disabled span {
+        color: #bdc3c7;
+        border-color: #bdc3c7;
+        cursor: not-allowed;
+    }
+    .pagination a:hover {
+        background-color: #2980b9;
+        color: white;
+        border-color: #2980b9;
+        transform: translateY(-2px);
+    }
+
     /* Empty State */
     .empty-state i {
         animation: float 3s ease-in-out infinite;
@@ -204,6 +252,13 @@
         .search-input, .btn-search {
             font-size: 0.9rem;
             padding: 0.5rem;
+        }
+        .pagination {
+            flex-wrap: wrap;
+        }
+        .pagination a, .pagination span {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
         }
     }
     @media (min-width: 768px) {
