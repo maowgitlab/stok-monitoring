@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\Models\Item;
 use App\Models\StockHistory;
+use App\Models\ColdStorage;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
@@ -286,12 +287,8 @@ class StockService
             'CHICKEN NUGGET',
         ];
 
-        $coldStorageMap = [
-            'KULIT AYAM MARINASI' => 750,
-            'DADA FILLET MARINASI' => 2800,
-            'DADA FILLET BURGER' => 2000,
-            'AYAM ORIGINAL' => 0,
-        ];
+        // Ambil cold storage dari database
+        $coldStorageMap = ColdStorage::all()->pluck('cold_storage_qty', 'item_name')->toArray();
 
         $unitConversions = [
             'KULIT AYAM MARINASI' => 500,

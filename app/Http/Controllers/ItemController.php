@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\StockHistory;
-use Illuminate\Http\Request;
+use App\Models\ColdStorage;
 use App\Services\StockService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -125,12 +126,10 @@ class ItemController extends Controller
         }
 
         DB::transaction(function () use ($itemIds) {
-            // Hapus histori aktif
             $deletedHistories = StockHistory::whereIn('item_id', $itemIds)
                 ->where('is_archived', false)
                 ->delete();
 
-            // Hapus item yang tidak punya histori tersisa (aktif atau arsip)
             $itemsDeleted = Item::whereIn('id', $itemIds)
                 ->whereDoesntHave('stockHistories')
                 ->delete();
@@ -151,7 +150,29 @@ class ItemController extends Controller
             $report = $this->stockService->generateWhatsappReport($tanggal);
         }
 
-        return view('items.whatsapp-report', compact('report', 'tanggal'));
+        // Ambil data cold storage dan allowed items
+        $coldStorages = ColdStorage::all();
+        $allowedItems = [
+            'KULIT AYAM MARINASI',
+            'AYAM ORIGINAL',
+            'AYAM UTUH',
+            'DADA FILLET MARINASI',
+            'DADA FILLET BURGER',
+            'AYAM SADAS',
+            'PATTY BESAR 360 LBR',
+            'PATTY KECIL 520 LBR',
+            'ROTI BESAR',
+            'ROTI KECIL',
+            'KENTANG',
+            'ICE CREAM COKLAT',
+            'ICE CREAM VANILLA',
+            'MOZZARELLA',
+            'SPAGHETTI',
+            'SAOS KENTANG',
+            'CHICKEN NUGGET',
+        ];
+
+        return view('items.whatsapp-report', compact('report', 'tanggal', 'coldStorages', 'allowedItems'));
     }
 
     public function sendToTelegram(Request $request)
@@ -189,5 +210,44 @@ class ItemController extends Controller
             return redirect()->route('items.whatsapp-report', ['tanggal' => $tanggal])
                 ->with('error', 'Terjadi kesalahan saat mengirim laporan ke Telegram.');
         }
+    }
+
+    public function storeColdStorage(Request $request)
+    {
+        $validated = $request->validate([
+            'item_name' => ['required', 'in:KULIT AYAM MARINASI,AYAM ORIGINAL,AYAM UTUH,DADA FILLET MARINASI,DADA FILLET BURGER,AYAM SADAS,PATTY BESAR 360 LBR,PATTY KECIL 520 LBR,ROTI BESAR,ROTI KECIL,KENTANG,ICE CREAM COKLAT,ICE CREAM VANILLA,MOZZARELLA,SPAGHETTI,SAOS KENTANG,CHICKEN NUGGET'],
+            'cold_storage_qty' => ['required', 'integer', 'min:0'],
+        ]);
+
+        $existing = ColdStorage::where('item_name', $validated['item_name'])->first();
+        if ($existing) {
+            return redirect()->route('items.whatsapp-report')->with('error', 'Item sudah ada di cold storage.');
+        }
+
+        ColdStorage::create($validated);
+        Log::info("Cold storage ditambahkan: " . json_encode($validated));
+
+        return redirect()->route('items.whatsapp-report')->with('success', 'Item cold storage berhasil ditambahkan.');
+    }
+
+    public function updateColdStorage(Request $request, ColdStorage $coldStorage)
+    {
+        $validated = $request->validate([
+            'cold_storage_qty' => ['required', 'integer', 'min:0'],
+        ]);
+
+        $coldStorage->update($validated);
+        Log::info("Cold storage diupdate: item_name={$coldStorage->item_name}, qty={$validated['cold_storage_qty']}");
+
+        return redirect()->route('items.whatsapp-report')->with('success', 'Jumlah cold storage berhasil diupdate.');
+    }
+
+    public function destroyColdStorage(ColdStorage $coldStorage)
+    {
+        $itemName = $coldStorage->item_name;
+        $coldStorage->delete();
+        Log::info("Cold storage dihapus: item_name={$itemName}");
+
+        return redirect()->route('items.whatsapp-report')->with('success', 'Item cold storage berhasil dihapus.');
     }
 }

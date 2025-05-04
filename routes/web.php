@@ -38,3 +38,7 @@ Route::post('/stocks/paste', [StockController::class, 'processPaste'])->name('st
 Route::post('/stocks/paste-out', [StockController::class, 'processPasteKeluar'])->name('stocks.paste.out');
 // Route komparasi stok
 Route::match(['get', 'post'], '/stocks/compare', [StockComparisonController::class, 'index'])->name('stocks.compare');
+// Route untuk Cold Storage
+Route::post('/cold-storages', [ItemController::class, 'storeColdStorage'])->name('cold-storages.store');
+Route::put('/cold-storages/{coldStorage}', [ItemController::class, 'updateColdStorage'])->name('cold-storages.update');
+Route::delete('/cold-storages/{coldStorage}', [ItemController::class, 'destroyColdStorage'])->name('cold-storages.destroy');
