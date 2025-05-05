@@ -50,7 +50,7 @@
             </p>
             <form action="{{ route('settings.clear-cache') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-import" onclick="return confirm('Apakah Anda yakin ingin menghapus semua cache? Ini akan:\n- Membersihkan cache konfigurasi\n- Membersihkan cache rute\n- Membersihkan cache view\n- Membersihkan cache aplikasi\n\nPerforma website mungkin akan lebih cepat setelah ini.')">
+                <button type="submit" class="btn btn-import" onclick="return confirm('Apakah Anda yakin ingin menghapus semua cache? Ini akan:\n- Membersihkan cache view\n- Membersihkan cache aplikasi\n\nPerforma website mungkin akan lebih cepat setelah ini.')">
                     <i class="fas fa-trash-alt me-2"></i> Hapus Cache
                 </button>
             </form>
