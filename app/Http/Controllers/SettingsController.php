@@ -13,8 +13,12 @@ class SettingsController extends Controller
     {
         // Hitung ukuran cache
         $cacheSizes = [
-            'view' => $this->getCacheSize('view'),
             'cache' => $this->getCacheSize('cache'),
+            'views' => $this->getCacheSize('views'),
+            'compiled' => $this->getCacheSize('compiled'),
+            'config' => $this->getCacheSize('config'),
+            'routes' => $this->getCacheSize('routes'),
+            'events' => $this->getCacheSize('events'),
         ];
 
         // Total ukuran dalam bytes
@@ -30,18 +34,24 @@ class SettingsController extends Controller
     public function clearCache(Request $request)
     {
         try {
-            Artisan::call('config:clear');
-            Artisan::call('route:clear');
-            Artisan::call('view:clear');
-            Artisan::call('cache:clear');
+            // Jalankan semua perintah optimize:clear
+            $commands = [
+                'cache:clear' => 'Cache aplikasi',
+                'view:clear' => 'Cache view',
+                'config:clear' => 'Cache konfigurasi',
+                'route:clear' => 'Cache route',
+                'event:clear' => 'Cache event',
+            ];
 
-            Log::info('Cache cleared successfully');
+            foreach ($commands as $command => $description) {
+                Artisan::call($command);
+                Log::info("{$description} cleared successfully");
+            }
 
             return redirect()->route('settings.index')
-                ->with('success', 'Cache berhasil dihapus (config, route, view, dan cache).');
+                ->with('success', 'Semua cache berhasil dihapus (cache, views, config, routes, events).');
         } catch (\Exception $e) {
             Log::error('Failed to clear cache: ' . $e->getMessage());
-
             return redirect()->route('settings.index')
                 ->with('error', 'Gagal menghapus cache: ' . $e->getMessage());
         }
@@ -51,16 +61,34 @@ class SettingsController extends Controller
     {
         $size = 0;
 
-        if ($type === 'view') {
-            $path = storage_path('framework/views');
-            if (File::exists($path)) {
-                $size = $this->getFolderSize($path);
-            }
-        } elseif ($type === 'cache') {
+        if ($type === 'cache') {
             $path = storage_path('framework/cache/data');
             if (File::exists($path)) {
                 $size = $this->getFolderSize($path);
             }
+        } elseif ($type === 'views') {
+            $path = storage_path('framework/views');
+            if (File::exists($path)) {
+                $size = $this->getFolderSize($path);
+            }
+        } elseif ($type === 'compiled') {
+            $path = base_path('bootstrap/cache/services.php');
+            if (File::exists($path)) {
+                $size = File::size($path);
+            }
+        } elseif ($type === 'config') {
+            $path = base_path('bootstrap/cache/config.php');
+            if (File::exists($path)) {
+                $size = File::size($path);
+            }
+        } elseif ($type === 'routes') {
+            $path = base_path('bootstrap/cache/routes-v7.php');
+            if (File::exists($path)) {
+                $size = File::size($path);
+            }
+        } elseif ($type === 'events') {
+            // Events cache biasanya di memory atau ikut cache:clear
+            $size = 0;
         }
 
         return $size;

@@ -18,8 +18,12 @@
             @php
                 $maxSize = max($cacheSizes) > 0 ? max($cacheSizes) : 1; // Hindari bagi nol
                 $labels = [
-                    'view' => 'Cache View',
                     'cache' => 'Cache Aplikasi',
+                    'views' => 'Cache View',
+                    'compiled' => 'Cache Compiled',
+                    'config' => 'Cache Konfigurasi',
+                    'routes' => 'Cache Route',
+                    'events' => 'Cache Event',
                 ];
             @endphp
 
@@ -46,12 +50,33 @@
 
             <h5 class="mb-3">Hapus Cache</h5>
             <p class="text-muted mb-4" style="font-family: 'Poppins', sans-serif;">
-                Menghapus cache akan membersihkan konfigurasi, rute, view, dan data cache aplikasi untuk meningkatkan performa. Gunakan fitur ini jika website terasa lambat atau setelah perubahan konfigurasi.
+                Menghapus cache akan membersihkan cache aplikasi, view, compiled, konfigurasi, route, dan event untuk meningkatkan performa. Gunakan fitur ini jika website terasa lambat atau setelah perubahan konfigurasi.
             </p>
             <form action="{{ route('settings.clear-cache') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-import" onclick="return confirm('Apakah Anda yakin ingin menghapus semua cache? Ini akan:\n- Membersihkan cache view\n- Membersihkan cache aplikasi\n\nPerforma website mungkin akan lebih cepat setelah ini.')">
+                <button type="submit" class="btn btn-import" onclick="return confirm('Apakah Anda yakin ingin menghapus semua cache? Ini akan:\n- Membersihkan cache aplikasi\n- Membersihkan cache view\n- Membersihkan cache compiled\n- Membersihkan cache konfigurasi\n- Membersihkan cache route\n- Membersihkan cache event\n\nPerforma website mungkin akan lebih cepat setelah ini.')">
                     <i class="fas fa-trash-alt me-2"></i> Hapus Cache
+                </button>
+            </form>
+
+            <hr class="my-4">
+
+            <h5 class="mb-3">Ganti PIN</h5>
+            <p class="text-muted mb-4" style="font-family: 'Poppins', sans-serif;">
+                Ubah PIN untuk mengakses menu Pengaturan. PIN harus terdiri dari 4 digit angka.
+            </p>
+            <form action="{{ route('pin.update') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label for="new_pin" class="form-label fw-bold" style="font-family: 'Poppins', sans-serif;">PIN Baru (4 digit)</label>
+                    <input type="password" name="new_pin" id="new_pin" class="form-control @error('new_pin') is-invalid @enderror"
+                           maxlength="4" pattern="\d{4}" required autocomplete="off">
+                    @error('new_pin')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" class="btn btn-import" onclick="return confirm('Apakah Anda yakin ingin mengubah PIN?')">
+                    <i class="fas fa-key me-2"></i> Ubah PIN
                 </button>
             </form>
         </div>
@@ -80,10 +105,18 @@
         transition: width 0.6s ease;
     }
     h1, h5, label.fw-bold, strong {
-        color: var(--text-light);
+        color: #2c3e50;
     }
     .text-muted {
         color: #6c757d !important;
+    }
+    .form-control {
+        border-radius: 10px;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        font-family: 'Poppins', sans-serif;
+    }
+    .invalid-feedback {
+        font-size: 0.9rem;
     }
 </style>
 @endsection

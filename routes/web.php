@@ -55,5 +55,6 @@ Route::middleware('web')->group(function () {
     Route::middleware('pin')->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::post('/settings/clear-cache', [SettingsController::class, 'clearCache'])->name('settings.clear-cache');
+        Route::post('/pin/update', [PinController::class, 'update'])->name('pin.update');
     });
 });
