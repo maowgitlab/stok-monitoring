@@ -14,7 +14,7 @@ class ImportController extends Controller
 {
     public function create()
     {
-        $recentImports = Import::orderByDesc('tanggal_import')->limit(5)->get();
+        $recentImports = Import::orderByDesc('tanggal_import')->get();
         return view('imports.create', compact('recentImports'));
     }
 
